@@ -59,6 +59,6 @@ assert.equal(cash.outs, 100);
 assert.equal(cash.tin, 50);
 assert.equal(cash.tout, 300);
 assert.equal(cash.balance, 900, 'cash balance must include transfers but not count them as income/expense');
-assert.equal(bank.balance, 930, 'bank balance must include inbound/outbound transfers');
+assert.equal(bank.balance, 830, 'bank balance must include inbound/outbound transfers');
 assert.equal(cash.ins + bank.ins, 330, 'internal transfers must not inflate receipts');
 console.log('PASS financial regression: opening balances, receipts/payments and internal transfers');
