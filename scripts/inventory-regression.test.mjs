@@ -67,12 +67,14 @@ const summaryMatch = html.match(/function linkedPurchasePayments\(p,excludeId\)\
 assert.ok(summaryMatch, 'financial summary and linked settlement helpers must exist');
 const financeState = {
   sales: [
-    { id: 's1', cust: 'مشتری الف', total: 1000, paid: 200 },
-    { id: 's2', cust: 'مشتری ب', total: 400, paid: 0 }
+    { id: 's1', cust: 'مشتری الف', date: '2026-10-20', total: 1000, paid: 200 },
+    { id: 's2', cust: 'مشتری ب', date: '2026-10-21', total: 400, paid: 0 },
+    { id: 's3', cust: 'مشتری آینده', date: '2026-10-22', total: 9000, paid: 0 }
   ],
   purch: [
-    { id: 'p1', sup: 'تأمین‌کننده الف', total: 600 },
-    { id: 'p2', sup: 'تأمین‌کننده ب', total: 150 }
+    { id: 'p1', sup: 'تأمین‌کننده الف', date: '2026-10-20', total: 600 },
+    { id: 'p2', sup: 'تأمین‌کننده ب', date: '2026-10-21', total: 150 },
+    { id: 'p3', sup: 'تأمین‌کننده آینده', date: '2026-10-22', total: 7000 }
   ],
   vouchers: [
     { id: 'v1', type: 'دریافت', related: 'فروش:s1', amount: 350 },
@@ -80,7 +82,7 @@ const financeState = {
     { id: 'v3', type: 'پرداخت', related: 'خرید:p1', amount: 200 },
     { id: 'v4', type: 'پرداخت', related: 'خرید:p1', amount: 50 }
   ],
-  exp: [{ amount: 50 }]
+  exp: [{ date: '2026-10-21', amount: 50 }, { date: '2026-10-22', amount: 999 }]
 };
 const finance = runInNewContext(summaryMatch[0] + '\nfinancialSummary()', {
   S: financeState, nm: x => String(x || '').trim(), eTot: x => x.amount, td: () => '2026-10-21'
