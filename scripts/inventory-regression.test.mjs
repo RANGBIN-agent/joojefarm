@@ -108,9 +108,9 @@ assert.match(deleteHandler[0], /if\(a=='sales'\|\|a=='purch'\)/,
 assert.match(deleteHandler[0], /if\(linked\.length\)/,
   'linked voucher guard must stop deletion when related vouchers exist');
 console.log('PASS financial regression: linked transaction deletion guard is present');\n
-assert.match(html, /function downloadBackup\\(\\)/, 'manager must have a JSON backup download action');
-assert.match(html, /createdAt:new Date\\(\\)\\.toISOString\\(\\)/, 'downloaded backup must be timestamped');
-assert.match(html, /parsed\\.app==='گله‌یار'&&parsed\\.format===1&&parsed\\.data/, 'restore must accept the exported backup envelope');
+assert.match(html, /function downloadBackup\(\)/, 'manager must have a JSON backup download action');
+assert.match(html, /createdAt:new Date\(\)\.toISOString\(\)/, 'downloaded backup must be timestamped');
+assert.match(html, /parsed\.app==='گله‌یار'&&parsed\.format===1&&parsed\.data/, 'restore must accept the exported backup envelope');
 assert.match(html, /gelehyar_preimport_backup/, 'restore must preserve an emergency snapshot before replacement');
 console.log('PASS financial regression: backup export and guarded restore');
 
