@@ -14,3 +14,5 @@ jobs:
           node-version: 20
       - name: Check inline JavaScript syntax
         run: node scripts/check-inline-js.mjs
+      - name: Test inventory date cutoffs
+        run: node scripts/inventory-regression.test.mjs
