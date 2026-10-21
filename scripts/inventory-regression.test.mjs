@@ -99,4 +99,38 @@ assert.equal(finance.customers.find(x => x.name === 'مشتری الف').due, 65
 assert.equal(finance.customers.find(x => x.name === 'مشتری الف').overdue, 650, 'past-due receivables must be separated from current receivables');
 assert.equal(finance.customers.find(x => x.name === 'مشتری ب').overdue, 0, 'future due dates must not count as overdue');
 assert.equal(finance.suppliers.find(x => x.name === 'تأمین‌کننده الف').due, 350);
-console.log('PASS financial regression: receivables and payables');
+console.log('PASS financial regression: receivables and payables');\n
+const deleteMatch = html.match(/function dl\\(b,a,id\\)\\{[^\\n]*\\}/);
+assert.ok(deleteMatch, 'delete handler must exist');
+assert.match(deleteMatch[0], /if\\(a=='sales'\\|\\|a=='purch'\\)/, 'sale/purchase delete must check linked vouchers');
+const deleteState = {
+  sales: [{ id: 'sale-linked' }, { id: 'sale-free' }],
+  purch: [{ id: 'purchase-linked', fid: null }, { id: 'purchase-free', fid: null }],
+  vouchers: [{ id: 'receipt-1', related: 'فروش:sale-linked' }, { id: 'payment-1', related: 'خرید:purchase-linked' }],
+  flocks: []
+};
+const deleteAlerts = [];
+const deleteContext = {
+  S: deleteState, RO: () => false, deny: () => {}, alert: msg => deleteAlerts.push(msg),
+  find: (key,id) => (deleteState[key] || []).find(item => item.id === id),
+  draw: () => {}
+};
+runInNewContext(deleteMatch[0] + '\\ndl(button, kind, id);', {
+  ...deleteContext,
+  button: { dataset: { s: '1' }, textContent: 'حذف' },
+  kind: 'sales', id: 'sale-linked'
+});
+assert.equal(deleteState.sales.length, 2, 'sales with linked receipts must not be deleted');
+assert.equal(deleteAlerts.length, 1, 'blocked delete should explain the linked voucher issue');
+const purchaseButton = { dataset: { s: '1' }, textContent: 'حذف' };
+runInNewContext(deleteMatch[0] + '\\ndl(button, kind, id);', {
+  ...deleteContext, button: purchaseButton, kind: 'purch', id: 'purchase-linked'
+});
+assert.equal(deleteState.purch.length, 2, 'purchases with linked payments must not be deleted');
+const freeButton = { dataset: { s: '1' }, textContent: 'حذف' };
+runInNewContext(deleteMatch[0] + '\\ndl(button, kind, id);', {
+  ...deleteContext, button: freeButton, kind: 'sales', id: 'sale-free'
+});
+assert.equal(deleteState.sales.some(x => x.id === 'sale-free'), false, 'unlinked sales should remain deletable');
+console.log('PASS financial regression: prevent deleting sales/purchases with linked vouchers');
+
