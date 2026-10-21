@@ -82,7 +82,7 @@ const financeState = {
   ],
   exp: [{ amount: 50 }]
 };
-const finance = runInNewContext(summaryMatch[0] + '\\nfinancialSummary()', {
+const finance = runInNewContext(summaryMatch[0] + '\nfinancialSummary()', {
   S: financeState, nm: x => String(x || '').trim(), eTot: x => x.amount, td: () => '2026-10-21'
 });
 assert.equal(finance.receivable, 950, 'linked customer receipts must reduce receivables without double counting');
