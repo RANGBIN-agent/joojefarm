@@ -80,7 +80,9 @@ const financeState = {
     { id: 'v1', type: 'دریافت', related: 'فروش:s1', amount: 350 },
     { id: 'v2', type: 'دریافت', related: 'فروش:s2', amount: 100 },
     { id: 'v3', type: 'پرداخت', related: 'خرید:p1', amount: 200 },
-    { id: 'v4', type: 'پرداخت', related: 'خرید:p1', amount: 50 }
+    { id: 'v4', type: 'پرداخت', related: 'خرید:p1', date: '2026-10-21', amount: 50 },
+    { id: 'v5', type: 'دریافت', related: 'فروش:s2', date: '2026-10-22', amount: 400 },
+    { id: 'v6', type: 'پرداخت', related: 'خرید:p2', date: '2026-10-22', amount: 150 }
   ],
   exp: [{ date: '2026-10-21', amount: 50 }, { date: '2026-10-22', amount: 999 }]
 };
