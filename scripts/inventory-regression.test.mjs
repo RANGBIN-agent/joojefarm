@@ -62,3 +62,35 @@ assert.equal(cash.balance, 900, 'cash balance must include transfers but not cou
 assert.equal(bank.balance, 830, 'bank balance must include inbound/outbound transfers');
 assert.equal(cash.ins + bank.ins, 330, 'internal transfers must not inflate receipts');
 console.log('PASS financial regression: opening balances, receipts/payments and internal transfers');
+
+const summaryMatch = html.match(/function linkedPurchasePayments\(p,excludeId\)\{[^\n]*\}\nfunction linkedSaleReceipts\(p,excludeId\)\{[^\n]*\}\nfunction financialSummary\(\)\{[^\n]*\}/);
+assert.ok(summaryMatch, 'financial summary and linked settlement helpers must exist');
+const financeState = {
+  sales: [
+    { id: 's1', cust: 'مشتری الف', total: 1000, paid: 200 },
+    { id: 's2', cust: 'مشتری ب', total: 400, paid: 0 }
+  ],
+  purch: [
+    { id: 'p1', sup: 'تأمین‌کننده الف', total: 600 },
+    { id: 'p2', sup: 'تأمین‌کننده ب', total: 150 }
+  ],
+  vouchers: [
+    { id: 'v1', type: 'دریافت', related: 'فروش:s1', amount: 350 },
+    { id: 'v2', type: 'دریافت', related: 'فروش:s2', amount: 100 },
+    { id: 'v3', type: 'پرداخت', related: 'خرید:p1', amount: 200 },
+    { id: 'v4', type: 'پرداخت', related: 'خرید:p1', amount: 50 }
+  ],
+  exp: [{ amount: 50 }]
+};
+const finance = runInNewContext(summaryMatch[0] + '\\nfinancialSummary()', {
+  S: financeState, nm: x => String(x || '').trim(), eTot: x => x.amount, td: () => '2026-10-21'
+});
+assert.equal(finance.receivable, 950, 'linked customer receipts must reduce receivables without double counting');
+assert.equal(finance.payable, 500, 'supplier payments linked to the purchase must reduce payables');
+assert.equal(finance.revenue, 1400);
+assert.equal(finance.purchaseCost, 750);
+assert.equal(finance.expenses, 50);
+assert.equal(finance.estimate, 600);
+assert.equal(finance.customers.find(x => x.name === 'مشتری الف').due, 650);
+assert.equal(finance.suppliers.find(x => x.name === 'تأمین‌کننده الف').due, 350);
+console.log('PASS financial regression: receivables and payables');
