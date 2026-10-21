@@ -37,3 +37,28 @@ assert.equal(context.SO['future-flock'], undefined,
 assert.equal(Object.values(context.SO).reduce((a, b) => a + b, 0), 10,
   'future-dated sales must not reduce current inventory');
 console.log('PASS inventory regression: date cutoffs and flock-start allocation');
+
+const ledgerMatch = html.match(/function accountLedger\(ac,a\)\{[^\n]*\}/);
+assert.ok(ledgerMatch, 'accountLedger() must exist for cash/bank balances');
+const ledgerS = {
+  set: { openingBalances: { 'صندوق نقدی': 1000, 'بانک': 500 } }
+};
+const vouchers = [
+  { type: 'دریافت', account: 'صندوق نقدی', amount: 250 },
+  { type: 'پرداخت', account: 'صندوق نقدی', amount: 100 },
+  { type: 'انتقال', account: 'صندوق نقدی', targetAccount: 'بانک', amount: 300 },
+  { type: 'انتقال', account: 'بانک', targetAccount: 'صندوق نقدی', amount: 50 },
+  { type: 'دریافت', account: 'بانک', amount: 80 }
+];
+const ledgerContext = { S: ledgerS };
+const cash = runInNewContext(ledgerMatch[0] + '\\naccountLedger("صندوق نقدی", vouchers)', { ...ledgerContext, vouchers });
+const bank = runInNewContext(ledgerMatch[0] + '\\naccountLedger("بانک", vouchers)', { ...ledgerContext, vouchers });
+assert.equal(cash.opening, 1000);
+assert.equal(cash.ins, 250);
+assert.equal(cash.outs, 100);
+assert.equal(cash.tin, 50);
+assert.equal(cash.tout, 300);
+assert.equal(cash.balance, 900, 'cash balance must include transfers but not count them as income/expense');
+assert.equal(bank.balance, 930, 'bank balance must include inbound/outbound transfers');
+assert.equal(cash.ins + bank.ins, 330, 'internal transfers must not inflate receipts');
+console.log('PASS financial regression: opening balances, receipts/payments and internal transfers');
