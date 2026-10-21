@@ -67,8 +67,8 @@ const summaryMatch = html.match(/function linkedPurchasePayments\(p,excludeId\)\
 assert.ok(summaryMatch, 'financial summary and linked settlement helpers must exist');
 const financeState = {
   sales: [
-    { id: 's1', cust: 'مشتری الف', date: '2026-10-20', total: 1000, paid: 200 },
-    { id: 's2', cust: 'مشتری ب', date: '2026-10-21', total: 400, paid: 0 },
+    { id: 's1', cust: 'مشتری الف', date: '2026-10-20', due: '2026-10-19', total: 1000, paid: 200 },
+    { id: 's2', cust: 'مشتری ب', date: '2026-10-21', due: '2026-10-30', total: 400, paid: 0 },
     { id: 's3', cust: 'مشتری آینده', date: '2026-10-22', total: 9000, paid: 0 }
   ],
   purch: [
@@ -96,5 +96,7 @@ assert.equal(finance.purchaseCost, 750);
 assert.equal(finance.expenses, 50);
 assert.equal(finance.estimate, 600);
 assert.equal(finance.customers.find(x => x.name === 'مشتری الف').due, 650);
+assert.equal(finance.customers.find(x => x.name === 'مشتری الف').overdue, 650, 'past-due receivables must be separated from current receivables');
+assert.equal(finance.customers.find(x => x.name === 'مشتری ب').overdue, 0, 'future due dates must not count as overdue');
 assert.equal(finance.suppliers.find(x => x.name === 'تأمین‌کننده الف').due, 350);
 console.log('PASS financial regression: receivables and payables');
