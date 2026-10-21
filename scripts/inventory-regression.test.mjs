@@ -51,8 +51,8 @@ const vouchers = [
   { type: 'دریافت', account: 'بانک', amount: 80 }
 ];
 const ledgerContext = { S: ledgerS };
-const cash = runInNewContext(ledgerMatch[0] + '\\naccountLedger("صندوق نقدی", vouchers)', { ...ledgerContext, vouchers });
-const bank = runInNewContext(ledgerMatch[0] + '\\naccountLedger("بانک", vouchers)', { ...ledgerContext, vouchers });
+const cash = runInNewContext(ledgerMatch[0] + '\naccountLedger("صندوق نقدی", vouchers)', { ...ledgerContext, vouchers });
+const bank = runInNewContext(ledgerMatch[0] + '\naccountLedger("بانک", vouchers)', { ...ledgerContext, vouchers });
 assert.equal(cash.opening, 1000);
 assert.equal(cash.ins, 250);
 assert.equal(cash.outs, 100);
