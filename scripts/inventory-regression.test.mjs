@@ -99,7 +99,8 @@ assert.equal(finance.customers.find(x => x.name === 'مشتری الف').due, 65
 assert.equal(finance.customers.find(x => x.name === 'مشتری الف').overdue, 650, 'past-due receivables must be separated from current receivables');
 assert.equal(finance.customers.find(x => x.name === 'مشتری ب').overdue, 0, 'future due dates must not count as overdue');
 assert.equal(finance.suppliers.find(x => x.name === 'تأمین‌کننده الف').due, 350);
-console.log('PASS financial regression: receivables and payables');\n
+console.log('PASS financial regression: receivables and payables');
+
 const deleteHandler = html.match(/function dl\(b,a,id\)\{[^\n]*\}/);
 assert.ok(deleteHandler, 'delete handler must exist');
 assert.match(deleteHandler[0], /if\(a=='sales'\|\|a=='purch'\)/,
