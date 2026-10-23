@@ -127,3 +127,13 @@ assert.ok(syncMergeMatch && /warehouses:Array\.isArray\(o\.warehouses\)\?o\.ware
 assert.ok(syncMergeMatch && /stockLocations:Array\.isArray\(o\.stockLocations\)\?o\.stockLocations:\[\]/.test(syncMergeMatch[0]),
   'older server payloads must safely load without stock locations');
 console.log('PASS sync regression: warehouse and stock-location data round-trip compatibly');
+
+const workerHandler = html.match(/wk:id=>\{[^\n]*\}/);
+assert.ok(workerHandler, 'worker form handler must exist');
+assert.ok(workerHandler[0].indexOf("if(!String(r.name||'').trim())") < workerHandler[0].indexOf("Object.assign(w,{"),
+  'worker name must be validated before mutating an existing worker');
+assert.match(workerHandler[0], /کارگری با این نام از قبل ثبت شده است/,
+  'duplicate worker names must be rejected');
+assert.match(workerHandler[0], /r\.mode=='ساعتی'&&\(!r\.startTime\|\|!r\.endTime\|\|hours<=0\)/,
+  'hourly payroll must reject missing or invalid working hours');
+console.log('PASS payroll integrity regression: validate before mutation, duplicate names, and hourly hours');
