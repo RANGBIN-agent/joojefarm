@@ -115,3 +115,15 @@ assert.match(html, /parsed\.app==='گله‌یار'&&parsed\.format===1&&parsed\
 assert.match(html, /gelehyar_preimport_backup/, 'restore must preserve an emergency snapshot before replacement');
 console.log('PASS financial regression: backup export and guarded restore');
 
+
+const syncSplitMatch = html.match(/function split\(\)\{[^\n]*\}/);
+const syncMergeMatch = html.match(/function merge\(o,f\)\{[^\n]*\}/);
+assert.ok(syncSplitMatch && /warehouses:S\.warehouses\|\|\[\]/.test(syncSplitMatch[0]),
+  'warehouse definitions must survive local/server split serialization');
+assert.ok(syncSplitMatch && /stockLocations:S\.stockLocations\|\|\[\]/.test(syncSplitMatch[0]),
+  'stock-location definitions must survive local/server split serialization');
+assert.ok(syncMergeMatch && /warehouses:Array\.isArray\(o\.warehouses\)\?o\.warehouses:\[\]/.test(syncMergeMatch[0]),
+  'older server payloads must safely load without warehouse definitions');
+assert.ok(syncMergeMatch && /stockLocations:Array\.isArray\(o\.stockLocations\)\?o\.stockLocations:\[\]/.test(syncMergeMatch[0]),
+  'older server payloads must safely load without stock locations');
+console.log('PASS sync regression: warehouse and stock-location data round-trip compatibly');
